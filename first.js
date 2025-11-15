@@ -1,0 +1,1 @@
+document.getElementsByClassName('top').textcontent = 'hi';
