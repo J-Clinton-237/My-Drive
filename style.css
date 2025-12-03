@@ -5,6 +5,13 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.userImg{
+  width: 40px;
+  height: 40px;
+  border-radius: 45%;
+  object-fit: cover;
+}
+
 body {
   background: #f5f8ff;
   color: #333;
@@ -18,7 +25,7 @@ body {
 
 /* Sidebar */
 .sidebar {
-  background: #0a1e5e;
+  background: #2d4db5;
   color: white;
   padding: 0px;
   display: flex;
@@ -92,25 +99,25 @@ body {
 }
 
 .purple { 
-  transition: transform 0.5s ease;
+  transition: transform 0.2s ease;
   background: #7a5af8; }
 .purple:hover{ 
   transform: scale(1.11);
   background: #614eac;}
 .green  { 
-  transition: transform 0.5s ease;
+  transition: transform 0.2s ease;
   background: #27c499; }
 .green:hover{  
   transform: scale(1.11);
   background: #37a084; }
 .pink   { 
-  transition: transform 0.5s ease;
+  transition: transform 0.2s ease;
   background: #f86b9b; }
 .pink:hover{ 
   transform: scale(1.11);
   background: #dc5884;}
 .blue   { 
-  transition: transform 0.5s ease;
+  transition: transform 0.2s ease;
   background: #3b82f6; }
 .blue:hover{ 
   transform: scale(1.11);
