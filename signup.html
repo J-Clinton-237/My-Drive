@@ -1,40 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="./style_log_in.css">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>SignUp</title>
+   <link rel="icon" href="icons/mydrive.png">
+   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-    <div class="main">
-        <div class="sign_up">
-            <img class="logo1" src="./iconz/mydrive.png" 
-            alt="my-drive" height="45px">
-            <br>
-            <div style="margin-left: 10%;">
-                First Name<input type="text" placeholder="John" class="fdFname">
-                LastName<input type="text" placeholder="Doe" class="fdLname"><br>
-                Date of Birth<br><input type="date" placeholder="" class="fd1age"><br>
-                Email<br><input type="email" placeholder="e.g johndoe@email.com" class="fd1email"><br>
-                Password<br><input type="password" placeholder=" Password" class="fd1pwd1"><br>
-                Confirm Password<br><input type="password" placeholder=" Password" class="fd1pwd1"><br>
-                <a href="./home.html">
-                    <button class="signupbtn">
-                        Sign Up
-                    </button>
-                </a>
-                <br><div style="margin-left: 20%; margin-top: 3%;">
-                       Already have an account?
-                       <a href="./Welcome.html"  style="text-decoration: none;" >
-                            Log in instead
-                       </a>
-                    </div>
+   <div class="ambient-light"></div>
+   <div class="ambient-light-2"></div>
+   <div class="panel">
+      <div class="form">
+         <div class="signup">
+            <div class="text">
+               <div>
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.5" d="M2 6.94975C2 6.06722 2 5.62595 2.06935 5.25839C2.37464 3.64031 3.64031 2.37464 5.25839 2.06935C5.62595 2 6.06722 2 6.94975 2C7.33642 2 7.52976 2 7.71557 2.01738C8.51665 2.09229 9.27652 2.40704 9.89594 2.92051C10.0396 3.03961 10.1763 3.17633 10.4497 3.44975L11 4C11.8158 4.81578 12.2237 5.22367 12.7121 5.49543C12.9804 5.64471 13.2651 5.7626 13.5604 5.84678C14.0979 6 14.6747 6 15.8284 6H16.2021C18.8345 6 20.1506 6 21.0062 6.76946C21.0849 6.84024 21.1598 6.91514 21.2305 6.99383C22 7.84935 22 9.16554 22 11.7979V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V6.94975Z" fill="#1C274C"></path> <path d="M20 6.23751C19.9992 5.94016 19.9949 5.76263 19.9746 5.60842C19.7974 4.26222 18.7381 3.2029 17.3919 3.02567C17.1969 3 16.9647 3 16.5003 3H9.98828C10.1042 3.10392 10.2347 3.23445 10.45 3.44975L11.0003 4C11.8161 4.81578 12.2239 5.22367 12.7124 5.49543C12.9807 5.64471 13.2653 5.7626 13.5606 5.84678C14.0982 6 14.675 6 15.8287 6H16.2024C17.9814 6 19.1593 6 20 6.23751Z" fill="#1C274C"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M12.25 10C12.25 9.58579 12.5858 9.25 13 9.25H18C18.4142 9.25 18.75 9.58579 18.75 10C18.75 10.4142 18.4142 10.75 18 10.75H13C12.5858 10.75 12.25 10.4142 12.25 10Z" fill="#1C274C"></path> </g></svg>
+               </div>
+               <div class="signup-text">
+                  <text>Get Started</text>
+                  <p>Create an account to get started</p>
+               </div>
             </div>
-        </div>
-    </div>
+            <div class="form-area">
+               <form action="login.html">
+                  <div class="name">
+                     <div>
+                        <input type="text" placeholder="First" style="padding: 20px 25px; font-size: 15px;">
+                     </div>
+                     <div>
+                        <input type="text" placeholder="Last" style="padding: 20px 25px; font-size: 15px;">
+                     </div>
+                  </div>
+                  <div class="input">
+                     <input type="email" placeholder="Email Address" style="padding: 20px 25px;">
+                  </div>
+                  <div class="input" style="padding: 16px 18px 8px 18px">
+                     <input type="password" placeholder="Create Password" style="padding: 20px 25px;">
+                  </div>
+                  <div>
+                     <input type="checkbox" checked disabled style="margin-left: 28px;">
+                     <text class="redirect" style="margin-left: 5px;">By creating an account, you agree to our <b style="color: #4aa1ff;">Terms</b> and <b style="color: #4aa1ff;">Privacy Policy.</b></text>
+                  </div>
+                  <div class="btn" style="padding-top: 10px;">
+                     <input type="submit" value="SignUp">
+                  </div>
+                  <text class="redirect" style="margin-left: 40px;">Already have an account? <b><a href="login.html" style="text-decoration: none; color: #4aa1ff;">LogIn</a></b></text>
+               </form>
+            </div>
+         </div>
+         <div class="img">
+            <img src="img/signup.png">
+         </div>
+      </div>
+   </div>
 </body>
-
 </html>
