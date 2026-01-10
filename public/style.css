@@ -1,0 +1,273 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+.userImg{
+  width: 40px;
+  height: 40px;
+  border-radius: 45%;
+  object-fit: cover;
+}
+
+body {
+  background: #dbe2f0;
+  color: #333;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 220px 1fr 280px;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  background: #2d4db5;
+  color: white;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar .profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 5px;
+}
+
+.sidebar img {
+   padding-right: 5px;
+  border-radius: 50%;
+}
+
+.sidebar nav a {
+  display: block;
+  color: #dbe4ff;
+  padding: 10px 0;
+  text-decoration: none;
+  transition: 0.3s;
+}
+.sidebar nav a:hover{
+  background-color: rgb(89, 89, 231);
+}
+
+.sidebar nav a:hover {
+  color: #fff;
+}
+
+/* Main Content */
+.main-content {
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
+}
+
+/* Categories */
+.categories .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 16px;
+  color: white;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card span {
+  display: block;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.purple { 
+  transition: transform 0.2s ease;
+  background: #7a5af8; }
+.purple:hover{ 
+  transform: scale(1.11);
+  background: #614eac;}
+.green  { 
+  transition: transform 0.2s ease;
+  background: #27c499; }
+.green:hover{  
+  transform: scale(1.11);
+  background: #37a084; }
+.pink   { 
+  transition: transform 0.2s ease;
+  background: #f86b9b; }
+.pink:hover{ 
+  transform: scale(1.11);
+  background: #dc5884;}
+.blue   { 
+  transition: transform 0.2s ease;
+  background: #3b82f6; }
+.blue:hover{ 
+  transform: scale(1.11);
+  background: #355d9d; }
+
+/* Recent Files Table */
+.recent-files table {
+  width: 100%;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+/* Right Panel */
+.right-panel {
+  background: #fff;
+  padding: 25px;
+  box-shadow: -2px 0 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.upload-box {
+  background: #eef3ff;
+  border: 2px dashed #a4b3ff;
+  padding: 40px;
+  border-radius: 14px;
+  text-align: center;
+  color: #4a60e3;
+}
+
+.progress-bar {
+  width: 100%;
+  background: #e3e7f5;
+  height: 8px;
+  border-radius: 6px;
+  margin: 10px 0;
+}
+
+.progress {
+  background: #4a60e3;
+  height: 100%;
+  border-radius: 6px;
+}
+
+.shared-folders ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.shared-folders li {
+  background: #f5f8ff;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+/* -------- RESPONSIVE DESIGN -------- */
+
+/* Medium Screens (Tablets) */
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 180px 1fr;
+  }
+
+  .right-panel {
+    display: none; /* hide right panel on tablets for more space */
+  }
+}
+
+/* Small Screens (Phones) */
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+  }
+
+  .sidebar nav {
+    display: flex;
+    gap: 15px;
+  }
+
+  .sidebar nav a {
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .sidebar .profile h2 {
+    display: none; /* hide "My Cloud" text */
+  }
+
+  .main-content {
+    padding: 15px;
+  }
+
+  .categories .cards {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .recent-files table {
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 10px;
+  }
+
+  .right-panel {
+    display: block;
+    padding: 15px;
+    box-shadow: none;
+  }
+
+  .upload-box {
+    padding: 20px;
+  }
+
+  .shared-folders li {
+    font-size: 14px;
+  }
+}
+
+/* Very Small Phones */
+@media (max-width: 480px) {
+  .categories .cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  .recent-files table, th, td {
+    font-size: 12px;
+  }
+}
