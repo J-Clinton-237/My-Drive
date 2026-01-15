@@ -25,7 +25,7 @@ When you pull the repo, to successfully run the server with no SQL errors, follo
        node server.js
       `
     
-    6. Open your browser at " http://localhost:3000/login.html"
+   6. Open your browser at " http://localhost:3000/login.html"
  
  And you are good to go.
 
