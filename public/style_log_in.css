@@ -40,12 +40,12 @@ body {
     border-right: 0;
 }
 
-.email {
+.field {
     margin-top: -30%;
     margin-bottom: 5%;
     height: 25px;
     border-radius: 7px;
-    width: 120%;
+    width: 60%;
     background: none;
     color: black;
     border: 1px solid black;
@@ -135,7 +135,7 @@ body {
     align-items: center;
     border: 2px solid black;
     width: 70%;
-    height: 500px;
+    height: 490px;
     border-radius: 5px;
     box-shadow: -1px 12px 12px;
     background-color: white;

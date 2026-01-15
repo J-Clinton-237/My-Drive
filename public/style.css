@@ -4,6 +4,10 @@
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
+:root{
+  --dis: none;
+
+}
 
 .userImg{
   width: 40px;
@@ -97,6 +101,11 @@ body {
   font-size: 13px;
   opacity: 0.9;
 }
+.burger{
+  display: none;
+  position: absolute;
+  right: 0;
+}
 
 .purple { 
   transition: transform 0.2s ease;
@@ -122,6 +131,37 @@ body {
 .blue:hover{ 
   transform: scale(1.11);
   background: #355d9d; }
+
+.dropdown{
+  display: var(--dis);
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  top: 45px;
+  height: auto;
+  width: 160px;
+  z-index: 1;
+  background-color: rgb(89, 89, 231);
+  transition: 0.4s;
+}
+.dropdown a{
+  text-decoration: none;
+  padding-left: 6px;
+  padding-top: 6px;
+  padding-bottom: 5px;
+  color: white;
+}
+.dropdown a:hover{
+  background-color: #9b91c5;
+}
+.dropdown p {
+  padding-left: 6px;
+  padding-top: 5px;
+  padding-bottom: 4px;
+  color: rgb(225, 206, 94);
+  font-size: 30px;
+  background-color: rgb(75, 75, 219);;
+}
 
 /* Recent Files Table */
 .recent-files table {
@@ -210,9 +250,15 @@ th, td {
     align-items: center;
     
   }
+  div.on{
+    display: block;
+  }
+  .burger{
+    display: inline;
+  }
 
   .sidebar nav {
-    display: flex;
+    display: none;
     gap: 15px;
   }
 
