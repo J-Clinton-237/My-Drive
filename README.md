@@ -16,14 +16,14 @@ When you pull the repo, to successfully run the server with no SQL errors, follo
     NB: <username> is the name of your mysql server e.g root. And enter the password when prompted.
 
     4. Install all backend dependencies by typing this in VS code terminal:
-    `
+      `
        npm install express mysql2 express-session
-    `
+      `
     
     5. Run the server at the VS code terminal:
-    `
+      `
        node server.js
-    `
+      `
     
     6. Open your browser at " http://localhost:3000/login.html"
  
