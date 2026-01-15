@@ -12,8 +12,8 @@ fetch('/me', { credentials: 'include' })
         return res.json();
     })
     .then(user => {
-        document.getElementsByClassName('name')[0].innerText = "Welcome Back " + user.name;
-        document.getElementsByClassName('name')[1].innerText = "Welcome Back " + user.name;
+        document.getElementbyId('name1').innerText = "Welcome Back " + user.name;
+        document.getElementbyId('name').innerText = "Welcome Back " + user.name;
         console.log(user.name, "entered dashboard");
         username = user.name;
         theme = user.theme;
