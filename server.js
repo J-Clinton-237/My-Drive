@@ -103,11 +103,9 @@ app.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) return res.join({ success: false });
         res.clearCookie('connect.sid');
-        res.json({success: true})
+        res.json({ success: true });
     })
 })
-
-
 
 // SIGNING UP NEW USER
 app.post('/signup', (req, res) => {
