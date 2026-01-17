@@ -8,7 +8,7 @@ const path = require('path');
 
 // Allow JSON from frontend
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));    
 
 // Serve front end
 app.use(express.static('public'));
@@ -40,7 +40,6 @@ db.connect(err => {
         console.log('Connected to MySQL');
     }
 });
- 
 
 //LOGIN VERIFICATION
 app.post('/login', (req, res) => {
@@ -55,30 +54,27 @@ app.post('/login', (req, res) => {
         }
         {   const user = results[0];
             if (results.length > 0) {
-                
                 req.session.user = {
                 id: user.id,
                 name: user.name,
-                email: user.email}
+                email: user.email
+                }
                 res.json({ success: true, id:results[0].id });
             } else {
 
                 res.json({ success: false });
-   
             }
             //console.log(req.session);
-           // console.log(user);
-           
+           // console.log(user); 
         }
-
     });
 });
 
 //Get logged in user
 app.get('/me', (req, res) => {
-    if (!req.session.user)
-       
+    if (!req.session.user) {
         return res.status(401).json({ error: "Not Logged in " });
+    }
     const sql = ` 
     SELECT u.id, u.name, u.email, d.theme,
     d.profile_pic, d.notifications
