@@ -20,11 +20,14 @@ When you pull the repo, to successfully run the server with no SQL errors, follo
        npm install express mysql2 express-session
       `
     
-   5. Run the server at the VS code terminal:
+   5. Run the backend server at the VS code terminal:
       `
        node server.js
       `
-    
+   6. Run the front end rendering engine which is react:
+      `
+        cd client; node start
+      `
    6. Open your browser at " http://localhost:3000/login.html"
  
  And you are good to go.

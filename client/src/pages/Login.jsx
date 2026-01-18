@@ -17,16 +17,17 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (data.success) {
-        navigate("/home");
+        navigate("/Dashboard");
       } else {
         alert("Invalid Email or Password");
       }
@@ -37,7 +38,14 @@ export default function Login() {
   };
 
   return (
-    <div className="main">
+    <div className="main" style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(rgb(15, 221, 214), rgb(11, 105, 177))',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px 0'
+    }}>
       <div className="log_in">
 
         <div className="myd">
@@ -51,6 +59,8 @@ export default function Login() {
             justifyContent: "center",
             alignItems: "center",
             flexDirection: "column",
+            width: "100%",
+            padding: "0 20px"
           }}
         >
           <div>
@@ -76,19 +86,23 @@ export default function Login() {
           </div>
 
           <br />
-          <button className="loginbtn" type="submit">
+          <div>
+             <button className="loginbtn" type="submit">
             Log in
-          </button>
+             </button>
+          </div>
         </form>
 
-        <div className="fgt pwd" style={{ marginTop: "4%" }}>
+        <div className="fgt pwd" style={{ marginTop: "15px", display: 'flex', justifyContent: 'space-between', width: '90%', gap: '20px' }}>
           <a
-            href="#"
+            onClick={() => alert("Forgot password functionality coming soon")}
             style={{
-              textAlign: "left",
+              background: 'none',
+              border: 'none',
               textDecoration: "none",
-              marginRight: "30%",
               color: "rgb(75, 75, 188)",
+              cursor: 'pointer',
+              fontSize: '14px'
             }}
           >
             Forgot password?
@@ -97,24 +111,25 @@ export default function Login() {
           <a
             href="/signup"
             style={{
-              textAlign: "right",
               textDecoration: "none",
               color: "rgb(75, 75, 188)",
+              fontSize: '14px'
             }}
           >
             Create account
           </a>
         </div>
 
-        <h4 style={{ marginTop: "3%" }}>Sign up with</h4>
+        <h4 style={{ marginTop: "20px", fontSize: '14px', color: '#333' }}>Sign up with</h4>
 
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            columnGap: "60%",
+            gap: "40px",
+            alignItems: "center",
             justifyContent: "center",
-            marginTop: "5%",
+            marginTop: "15px",
           }}
         >
           <a href="#">

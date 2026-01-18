@@ -25,7 +25,7 @@ export default function Signup() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/signup", {
+      const res = await fetch("http://localhost:5000/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -36,9 +36,13 @@ export default function Signup() {
       });
 
       const data = await res.json();
-      alert(data.message);
-
-      navigate("/login");
+      
+      if (data.message === "Success") {
+        alert("Account created successfully! Please log in.");
+        navigate("/");
+      } else {
+        alert(data.message);
+      }
     } catch (error) {
       console.error(error);
       alert("Server error. Try again later.");
@@ -46,7 +50,14 @@ export default function Signup() {
   };
 
   return (
-    <div className="main">
+    <div className="main" style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(rgb(15, 221, 214), rgb(11, 105, 177))',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px 0'
+    }}>
       <div className="sign_up">
         <img
           className="logo1"
@@ -138,7 +149,7 @@ export default function Signup() {
 
           <div style={{ marginLeft: "20%", marginTop: "3%" }}>
             Already have an account?{" "}
-            <a href="/login" style={{ textDecoration: "none" }}>
+            <a href="/" style={{ textDecoration: "none" }}>
               Log in instead
             </a>
           </div>

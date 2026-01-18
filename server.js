@@ -3,15 +3,22 @@ const { json } = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const mysql = require('mysql2');
+const cors = require('cors');
 const app = express();
 const path = require('path');
+
+// CORS configuration - allow React app to communicate with server
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 
 // Allow JSON from frontend
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));    
 
 // Serve front end
-app.use(express.static('public'));
+//app.use(express.static('public'));
 
 //session set up
 app.use(session({
@@ -20,7 +27,8 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         secure: false,
-        httpOnly: true
+        httpOnly: true,
+        sameSite: 'lax'
      }
 
 }))
@@ -138,6 +146,6 @@ app.post('/signup', (req, res) => {
 });
 
 // Run Server
-app.listen(3000, () => {
-    console.log('Server running on, copy http://localhost:3000/login.html and paste in your Browser');
+app.listen(5000, () => {
+    console.log('Server running on http://localhost:5000');
 });

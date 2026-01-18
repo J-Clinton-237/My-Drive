@@ -18,13 +18,13 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/me", {
+        const res = await fetch("http://localhost:5000/me", {
           credentials: "include",
         });
 
         if (res.status === 401) {
           console.log("Unauthorized, redirecting...");
-          navigate("/login");
+          navigate("/");
           return;
         }
 
@@ -33,7 +33,7 @@ export default function Dashboard() {
         setTheme(user.theme);
       } catch (err) {
         console.error(err);
-        navigate("/login");
+        navigate("/");
       }
     };
 
@@ -102,7 +102,7 @@ export default function Dashboard() {
         </div>
 
         <section className="categories">
-          <h3>Categories</h3>
+          
           <div className="cards">
             <a href="/photos" style={{ textDecoration: "none" }}>
               <div className="card purple">
@@ -132,10 +132,10 @@ export default function Dashboard() {
               <span>0 files</span>
             </div>
           </div>
-        </section>
+        </section><br />
 
         <section className="recent-files">
-          <h3>Recent Files</h3>
+          
           {/* You can dynamically populate recent files here */}
         </section>
       </main>
