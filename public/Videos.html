@@ -16,38 +16,123 @@
             <h1 style="color: white;">Videos</h1>
         </div>
     </div>
-    <main>
+    <main id="videosContainer">
 
-        <div class="vid">
-            <video controls width="1000">
-                <source src="./videos/ep 1.mp4" type="video/mp4">
-            </video>
-            <div style="text-align: center;margin-top: 5px;">The Boondocks episode 1
+        <!-- Videos will be loaded dynamically here -->
 
-            </div>
-        </div>
-
-        <div class="vid">
-            <video controls width="1000">
-                <source src="./videos/ep 2.mp4" type="video/mp4">
-            </video>
-            <div style="text-align: center;margin-top: 5px;">The Boondocks episode 2
-
-            </div>
-        </div>
-        <div class="vid">
-            <video controls width="1000">
-                  <source src="./videos/ep 3.mp4" type="video/mp4">
-             </video>
-            <div style="text-align: center;margin-top: 5px;">The Boondocks episode 3
-
-            </div>
-        </div>
     </main>
     <div class="buttonBox">
     <a href="./home.html" style="text-decoration: none;"> <button>Back</button></a>
-    <a href="#" style="text-decoration: none;"> <button>Add</button></a>
+    <input type="file" id="videoInput" accept="video/*" style="display: none;" multiple>
+    <button onclick="document.getElementById('videoInput').click()">Add</button>
     </div>
+
+    <script>
+        // Load videos on page load
+        document.addEventListener('DOMContentLoaded', loadVideos);
+
+        // Handle file selection and upload
+        document.getElementById('videoInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            for (let file of files) {
+                uploadVideo(file);
+            }
+        });
+
+        async function loadVideos() {
+            try {
+                const response = await fetch('/files', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const files = await response.json();
+                    const videosContainer = document.getElementById('videosContainer');
+
+                    // Filter for video files
+                    const videoFiles = files.filter(file => file.type.startsWith('video/'));
+
+                    if (videoFiles.length === 0) {
+                        videosContainer.innerHTML = '<p>No videos uploaded yet.</p>';
+                        return;
+                    }
+
+                    const userId = await getUserId();
+                    videosContainer.innerHTML = videoFiles.map(file => `
+                        <div class="vid">
+                            <video controls width="1000">
+                                <source src="/uploads/${userId}/${file.filename}" type="${file.type}">
+                            </video>
+                            <div style="text-align: center;margin-top: 5px;">${file.filename}</div>
+                            <button class="delete-btn" onclick="deleteFile('${file.filename}')">🗑️ Delete</button>
+                        </div>
+                    `).join('');
+                } else {
+                    console.error('Failed to load videos');
+                }
+            } catch (error) {
+                console.error('Error loading videos:', error);
+            }
+        }
+
+        async function uploadVideo(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('Video uploaded successfully!');
+                    loadVideos(); // Reload videos after upload
+                } else {
+                    const error = await response.json();
+                    alert('Upload failed: ' + (error.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error uploading video:', error);
+                alert('Upload failed: ' + error.message);
+            }
+        }
+
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/files/${filename}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('File deleted successfully!');
+                    loadVideos(); // Refresh the video list
+                } else {
+                    const error = await response.json();
+                    alert('Delete failed: ' + (error.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Delete failed: ' + error.message);
+            }
+        }
+
+        function getUserId() {
+            // Get user ID from session via /me endpoint
+            return fetch('/me', { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => data.id)
+                .catch(err => {
+                    console.error('Error getting user ID:', err);
+                    return null;
+                });
+        }
+    </script>
 </body>
 
 </html>

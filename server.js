@@ -4,8 +4,10 @@ const express = require('express');
 const session = require('express-session');
 const mysql = require('mysql2');
 const cors = require('cors');
+const multer = require('multer');
 const app = express();
 const path = require('path');
+const fs = require('fs');
 
 // CORS configuration - allow React app to communicate with server
 app.use(cors({
@@ -16,9 +18,6 @@ app.use(cors({
 // Allow JSON from frontend
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));    
-
-// Serve front end
-//app.use(express.static('public'));
 
 //session set up
 app.use(session({
@@ -32,6 +31,19 @@ app.use(session({
      }
 
 }))
+
+// Multer setup for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const userDir = path.join(__dirname, 'uploads', req.session.user.id.toString());
+        require('fs').mkdirSync(userDir, { recursive: true });
+        cb(null, userDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const upload = multer({ storage });
 
 // MySQL DB connection
 const db = mysql.createConnection({
@@ -144,6 +156,107 @@ app.post('/signup', (req, res) => {
         
     });
 });
+
+// File upload
+app.post('/upload', upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+    }
+    res.json({ message: 'File uploaded successfully', filename: req.file.filename });
+});
+
+// Get user files
+app.get('/files', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    const fs = require('fs');
+    const userDir = path.join(__dirname, 'uploads', req.session.user.id.toString());
+    
+    if (!fs.existsSync(userDir)) {
+        return res.json([]);
+    }
+    
+    const files = fs.readdirSync(userDir).map(filename => {
+        const filePath = path.join(userDir, filename);
+        const stats = fs.statSync(filePath);
+        return {
+            filename,
+            size: stats.size,
+            type: require('mime-types').lookup(filename) || 'application/octet-stream',
+            uploaded_at: stats.birthtime
+        };
+    });
+    
+    res.json(files);
+});
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Update user settings
+app.put('/settings', (req, res) => {
+    console.log('PUT /settings route hit');
+    if (!req.session.user) {
+        console.log('No session user');
+        return res.status(401).json({ error: "Not logged in" });
+    }
+
+    const { theme, profile_pic } = req.body;
+    console.log('Request body:', req.body);
+    console.log('Updating settings for user', req.session.user.id, ':', { theme, profile_pic });
+    
+    const sql = 'UPDATE data SET theme = ?, profile_pic = ? WHERE user_id = ?';
+    
+    db.query(sql, [theme, profile_pic, req.session.user.id], (err, result) => {
+        if (err) {
+            console.error('Error updating settings:', err);
+            return res.status(500).json({ error: 'Failed to update settings' });
+        }
+        console.log('Settings updated successfully, affected rows:', result.affectedRows);
+        res.json({ message: 'Settings updated successfully' });
+    });
+});
+
+// Test GET route for settings
+app.get('/settings', (req, res) => {
+    console.log('GET /settings route hit');
+    res.json({ message: 'Settings endpoint works' });
+});
+
+// Delete user file
+app.delete('/files/:filename', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const filename = req.params.filename;
+    const userDir = path.join(__dirname, 'uploads', req.session.user.id.toString());
+    const filePath = path.join(userDir, filename);
+
+    // Check if file exists and belongs to user
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: 'File not found' });
+    }
+
+    // Delete the file
+    try {
+        fs.unlinkSync(filePath);
+        console.log(`File deleted: ${filePath}`);
+        res.json({ message: 'File deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting file:', error);
+        res.status(500).json({ error: 'Failed to delete file' });
+    }
+});
+
+// Root route - serve login page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Serve front end
+app.use(express.static('public'));
 
 // Run Server
 app.listen(5000, () => {

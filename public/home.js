@@ -18,8 +18,18 @@ fetch('/me', { credentials: 'include' })
         console.log(user.name, "entered dashboard");
         username = user.name;
         theme = user.theme;
-        //can add theme manipulation here with user.theme
+
+        // Set profile picture
+        const profilePicUrl = user.profile_pic ? `/uploads/${user.id}/${user.profile_pic}?t=${Date.now()}` : './images/user_img/img_1735582873460.jpg';
+        document.getElementById('profilePic').src = profilePicUrl;
+
+        // Apply theme
+        applyTheme(theme);
     });
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
 let dis = false;
 let b = document.querySelectorAll('#burger');
 b.forEach(element => {

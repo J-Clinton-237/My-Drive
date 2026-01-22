@@ -8,6 +8,7 @@ document.getElementById('signupForm').addEventListener('submit', async e => {
     const res = await fetch('/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',  // Include cookies for session
         body: JSON.stringify({ email, password, name })
     });
     const data = await res.json();
@@ -16,8 +17,4 @@ document.getElementById('signupForm').addEventListener('submit', async e => {
     if (data.message === "Success") {
         window.location.href = 'login.html'
     }
-    else {
-        window.location.href = 'login.html'
-    }
-
 });
