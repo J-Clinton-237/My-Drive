@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents</title>
+    <link rel="stylesheet" href="./pic.css">
+</head>
+
+<body>
+    <div class="header">
+        <div>
+            <h1>Documents</h1>
+        </div>
+    </div>
+    <main id="documentsContainer">
+        <!-- Documents will be loaded here -->
+    </main>
+    <div class="buttonBox">
+        <a href="./home.html" style="text-decoration: none;"> <button>Back</button></a>
+        <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx" style="display: none;" onchange="uploadDocument()">
+        <button onclick="document.getElementById('documentInput').click()">Add Document</button>
+    </div>
+
+    <script>
+        async function fetchDocuments() {
+            try {
+                const res = await fetch('/files', { credentials: 'include' });
+                if (res.status === 401) {
+                    window.location.href = './login.html';
+                    return;
+                }
+                const files = await res.json();
+                // Filter for document files
+                const documents = files.filter(file =>
+                    file.type === 'application/pdf' ||
+                    file.type === 'application/msword' ||
+                    file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                    file.type === 'text/plain' ||
+                    file.type === 'application/rtf' ||
+                    file.type === 'application/vnd.oasis.opendocument.text' ||
+                    file.type === 'application/vnd.ms-excel' ||
+                    file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                    file.type === 'application/vnd.ms-powerpoint' ||
+                    file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+                );
+                const container = document.getElementById('documentsContainer');
+
+                if (documents.length === 0) {
+                    container.innerHTML = '<p>No documents uploaded yet.</p>';
+                    return;
+                }
+
+                const userId = await getUserId();
+                container.innerHTML = documents.map(file => `
+                    <div class="pic">
+                        <div style="padding: 20px; border: 1px solid #ccc; border-radius: 5px; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">📄</div>
+                            <div style="font-weight: bold; margin-bottom: 10px;">${file.filename}</div>
+                            <a href="/uploads/${userId}/${file.filename}" target="_blank" style="display: inline-block; padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 3px; margin-bottom: 10px;">View/Download</a>
+                            <br>
+                            <button class="delete-btn" onclick="deleteFile('${file.filename}')">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Error fetching documents:', err);
+            }
+        }
+
+        function getUserId() {
+            // Get user ID from session via /me endpoint
+            return fetch('/me', { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => data.id)
+                .catch(err => {
+                    console.error('Error getting user ID:', err);
+                    return null;
+                });
+        }
+
+        async function uploadDocument() {
+            const file = document.getElementById('documentInput').files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/upload', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Document uploaded successfully!');
+                    fetchDocuments(); // Refresh documents
+                } else {
+                    alert('Upload failed');
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                alert('Upload error');
+            }
+        }
+
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/files/${filename}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('File deleted successfully!');
+                    fetchDocuments(); // Refresh the document list
+                } else {
+                    const error = await response.json();
+                    alert('Delete failed: ' + (error.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Delete failed: ' + error.message);
+            }
+        }
+
+        // Load documents on page load
+        window.onload = fetchDocuments;
+    </script>
+</body>
+
+</html>

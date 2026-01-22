@@ -4,20 +4,341 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .settings-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .settings-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .theme-toggle label {
+            font-weight: 500;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle-switch.active {
+            background: #007bff;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .current-profile {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ddd;
+        }
+        .upload-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .upload-btn:hover {
+            background: #0056b3;
+        }
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .back-btn:hover {
+            background: #545b62;
+        }
+        .success-message {
+            color: #28a745;
+            margin-top: 10px;
+            display: none;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="main">
-        <div class="head">
-            
+    <div class="settings-container">
+        <h2 style="text-align: center; margin-bottom: 30px;">Settings</h2>
+
+        <div class="settings-section">
+            <h3>🎨 Theme</h3>
+            <div class="theme-toggle">
+                <label for="themeToggle">Dark Mode</label>
+                <div class="toggle-switch" id="themeToggle"></div>
+            </div>
+            <p style="color: #666; margin: 0;">Toggle between light and dark theme</p>
         </div>
-        <div class="body">
-        
 
-
+        <div class="settings-section">
+            <h3>👤 Profile Picture</h3>
+            <div class="profile-section">
+                <img id="currentProfilePic" class="current-profile" src="./images/user_img/img_1735582873460.jpg" alt="Current Profile">
+                <div>
+                    <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+                    <button class="upload-btn" onclick="document.getElementById('profilePicInput').click()">Change Picture</button>
+                    <p style="color: #666; margin: 10px 0 0 0; font-size: 14px;">Upload a new profile picture (JPG, PNG, GIF)</p>
+                </div>
+            </div>
         </div>
 
+        <div id="successMessage" class="success-message">Settings saved successfully!</div>
+        <div id="errorMessage" class="error-message">Failed to save settings. Please try again.</div>
+
+        <a href="./home.html" class="back-btn">← Back to Dashboard</a>
     </div>
 
+    <script>
+        let currentUser = null;
+        let currentTheme = 'light';
 
+        // Test GET request
+        fetch('/settings', { credentials: 'include' })
+            .then(res => {
+                console.log('GET /settings response:', res);
+                console.log('GET /settings status:', res.status);
+                return res.json();
+            })
+            .then(data => console.log('GET /settings data:', data))
+            .catch(err => console.error('GET /settings error:', err));
+
+        // Theme toggle functionality
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            currentTheme = this.classList.contains('active') ? 'dark' : 'light';
+            applyTheme(currentTheme);
+            // Only save if user data is loaded
+            if (currentUser) {
+                saveSettings();
+            }
+        });
+
+        // Profile picture upload
+        document.getElementById('profilePicInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                uploadProfilePicture(file);
+            }
+        });
+
+        async function loadUserSettings() {
+            try {
+                const response = await fetch('/me', { credentials: 'include' });
+                if (response.status === 401) {
+                    window.location.href = './login.html';
+                    return;
+                }
+                const user = await response.json();
+                currentUser = user;
+
+                // Set theme
+                currentTheme = user.theme || 'light';
+                const themeToggle = document.getElementById('themeToggle');
+                if (currentTheme === 'dark') {
+                    themeToggle.classList.add('active');
+                } else {
+                    themeToggle.classList.remove('active');
+                }
+                applyTheme(currentTheme);
+
+                // Set profile picture
+                const profilePicUrl = user.profile_pic ? `/uploads/${user.id}/${user.profile_pic}?t=${Date.now()}` : './images/user_img/img_1735582873460.jpg';
+                document.getElementById('currentProfilePic').src = profilePicUrl;
+
+            } catch (error) {
+                console.error('Error loading user settings:', error);
+            }
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            // You can add more theme-specific styling here
+        }
+
+        async function uploadProfilePicture(file) {
+            console.log('Uploading profile picture:', file.name);
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // First upload the file
+                const uploadResponse = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error('Failed to upload image');
+                }
+
+                const uploadData = await uploadResponse.json();
+                console.log('Upload response:', uploadData);
+                const filename = uploadData.filename;
+
+                // Then update the profile picture setting
+                await updateProfilePicture(filename);
+
+            } catch (error) {
+                console.error('Error uploading profile picture:', error);
+                showError('Failed to upload profile picture');
+            }
+        }
+
+        async function updateProfilePicture(filename) {
+            console.log('Updating profile picture to:', filename);
+            try {
+                const response = await fetch('/settings', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        theme: currentTheme,
+                        profile_pic: filename
+                    }),
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    console.log('Profile picture updated successfully');
+                    // Update the displayed image
+                    const userId = await getUserId();
+                    document.getElementById('currentProfilePic').src = `/uploads/${userId}/${filename}?t=${Date.now()}`;
+                    // Update currentUser object
+                    if (currentUser) {
+                        currentUser.profile_pic = filename;
+                    }
+                    showSuccess();
+                } else {
+                    console.error('Failed to update profile picture, status:', response.status);
+                    throw new Error('Failed to update profile picture');
+                }
+            } catch (error) {
+                console.error('Error updating profile picture:', error);
+                showError('Failed to update profile picture');
+            }
+        }
+
+        async function saveSettings() {
+            try {
+                console.log('Making request to /settings');
+                const response = await fetch('/settings', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        theme: currentTheme,
+                        profile_pic: currentUser ? currentUser.profile_pic : null
+                    }),
+                    credentials: 'include'
+                });
+                console.log('Response received:', response);
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
+                if (response.ok) {
+                    console.log('Settings saved successfully:', { theme: currentTheme, profile_pic: currentUser ? currentUser.profile_pic : null });
+                    console.log('Response status:', response.status);
+                    console.log('Response:', response);
+                    showSuccess();
+                } else {
+                    console.error('Failed to save settings, status:', response.status);
+                    console.error('Response:', response);
+                    throw new Error('Failed to save settings');
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
+                });
+                showError('Failed to save settings');
+            }
+        }
+
+        function getUserId() {
+            return fetch('/me', { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => data.id)
+                .catch(err => {
+                    console.error('Error getting user ID:', err);
+                    return null;
+                });
+        }
+
+        function showSuccess() {
+            const successEl = document.getElementById('successMessage');
+            const errorEl = document.getElementById('errorMessage');
+            successEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            setTimeout(() => {
+                successEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            const successEl = document.getElementById('successMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            successEl.style.display = 'none';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
+    </script>
 </body>
 </html>

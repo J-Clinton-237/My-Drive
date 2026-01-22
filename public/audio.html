@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio</title>
+    <link rel="stylesheet" href="./pic.css">
+</head>
+
+<body>
+    <div class="header">
+        <div>
+            <h1>Audio</h1>
+        </div>
+    </div>
+    <main id="audioContainer">
+        <!-- Audio files will be loaded here -->
+    </main>
+    <div class="buttonBox">
+        <a href="./home.html" style="text-decoration: none;"> <button>Back</button></a>
+        <input type="file" id="audioInput" accept="audio/*" style="display: none;" onchange="uploadAudio()">
+        <button onclick="document.getElementById('audioInput').click()">Add Audio</button>
+    </div>
+
+    <script>
+        async function fetchAudio() {
+            try {
+                const res = await fetch('/files', { credentials: 'include' });
+                if (res.status === 401) {
+                    window.location.href = './login.html';
+                    return;
+                }
+                const files = await res.json();
+                const audioFiles = files.filter(file => file.type.startsWith('audio/'));
+                const container = document.getElementById('audioContainer');
+
+                if (audioFiles.length === 0) {
+                    container.innerHTML = '<p>No audio files uploaded yet.</p>';
+                    return;
+                }
+
+                const userId = await getUserId();
+                container.innerHTML = audioFiles.map(file => `
+                    <div class="vid">
+                        <audio controls style="width: 100%; max-width: 600px;">
+                            <source src="/uploads/${userId}/${file.filename}" type="${file.type}">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <div style="text-align: center;margin-top: 5px;">${file.filename}</div>
+                        <button class="delete-btn" onclick="deleteFile('${file.filename}')">🗑️ Delete</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Error fetching audio:', err);
+            }
+        }
+
+        function getUserId() {
+            // Get user ID from session via /me endpoint
+            return fetch('/me', { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => data.id)
+                .catch(err => {
+                    console.error('Error getting user ID:', err);
+                    return null;
+                });
+        }
+
+        async function uploadAudio() {
+            const file = document.getElementById('audioInput').files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/upload', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Audio uploaded successfully!');
+                    fetchAudio(); // Refresh audio files
+                } else {
+                    alert('Upload failed');
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                alert('Upload error');
+            }
+        }
+
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/files/${filename}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('File deleted successfully!');
+                    fetchAudio(); // Refresh the audio list
+                } else {
+                    const error = await response.json();
+                    alert('Delete failed: ' + (error.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Delete failed: ' + error.message);
+            }
+        }
+
+        // Load audio on page load
+        window.onload = fetchAudio;
+    </script>
+</body>
+
+</html>

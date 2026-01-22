@@ -6,42 +6,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pictures</title>
     <link rel="stylesheet" href="./pic.css">
-
 </head>
 
 <body>
-
     <div class="header">
         <div>
             <h1>Pictures</h1>
         </div>
     </div>
-    <main>
-        <div class="pic"><img src="./images/pexels-david-besh-884788.jpg" alt="">
-            <div style="text-align: center;margin-top: 5px;">A beautiful view of the Moon
-
-            </div>
-        </div>
-        <div class="pic"><img src="./images/pexels-eberhardgross-1301976.jpg" alt="">
-            <div style="text-align: center;margin-top: 5px;">Night photo of a Lake
-
-            </div>
-        </div>
-        <div class="pic"><img src="./images/pexels-eberhardgross-1612351.jpg" alt="">
-            <div style="text-align: center;margin-top: 5px;"></div>
-
-            </div>
-        </div>
-        <div class="pic"><img src="./images/pexels-eberhardgross-1612353.jpg" alt="">
-            <div style="text-align: center;margin-top: 5px;">Another Cool compound close to the shore
-
-            </div>
-        </div>
+    <main id="photosContainer">
+        <!-- Photos will be loaded here -->
     </main>
     <div class="buttonBox">
-    <a href="./home.html" style="text-decoration: none;"> <button>Back</button></a>
-    <a href="#" style="text-decoration: none;"> <button>Add</button></a>
+        <a href="./home.html" style="text-decoration: none;"> <button>Back</button></a>
+        <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="uploadPhoto()">
+        <button onclick="document.getElementById('photoInput').click()">Add Photo</button>
     </div>
+
+    <script>
+        async function fetchPhotos() {
+            try {
+                const res = await fetch('/files', { credentials: 'include' });
+                if (res.status === 401) {
+                    window.location.href = './login.html';
+                    return;
+                }
+                const files = await res.json();
+                const photos = files.filter(file => file.type.startsWith('image/'));
+                const container = document.getElementById('photosContainer');
+
+                if (photos.length === 0) {
+                    container.innerHTML = '<p>No photos uploaded yet.</p>';
+                    return;
+                }
+
+                const userId = await getUserId();
+                container.innerHTML = photos.map(file => `
+                    <div class="pic">
+                        <img src="/uploads/${userId}/${file.filename}" alt="${file.filename}">
+                        <div style="text-align: center;margin-top: 5px;">${file.filename}</div>
+                        <button class="delete-btn" onclick="deleteFile('${file.filename}')">🗑️ Delete</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Error fetching photos:', err);
+            }
+        }
+
+        function getUserId() {
+            // Get user ID from session via /me endpoint
+            return fetch('/me', { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => data.id)
+                .catch(err => {
+                    console.error('Error getting user ID:', err);
+                    return null;
+                });
+        }
+
+        async function uploadPhoto() {
+            const file = document.getElementById('photoInput').files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/upload', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Photo uploaded successfully!');
+                    fetchPhotos(); // Refresh photos
+                } else {
+                    alert('Upload failed');
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                alert('Upload error');
+            }
+        }
+
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/files/${filename}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('File deleted successfully!');
+                    fetchPhotos(); // Refresh the photo list
+                } else {
+                    const error = await response.json();
+                    alert('Delete failed: ' + (error.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Delete failed: ' + error.message);
+            }
+        }
+
+        // Load photos on page load
+        window.onload = fetchPhotos;
+    </script>
 </body>
 
 </html>

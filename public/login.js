@@ -10,6 +10,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     const res = await fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',  // Include cookies for session
         body: JSON.stringify({ email, password })
     })
 
